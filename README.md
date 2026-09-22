@@ -112,7 +112,7 @@ Gopher-AI/
 | Component | Minimum | Used for Training |
 |-----------|---------|-------------------|
 | GPU | 4 GB VRAM (NVIDIA) | NVIDIA GTX 1650 (4 GB) |
-| RAM | 8 GB | — |
+| RAM | 8 GB | 16 GB |
 | Storage | ~15 GB free | Dataset + checkpoints |
 
 ### Software
