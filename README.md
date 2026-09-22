@@ -131,7 +131,7 @@ kaggle        >= 1.6          # pip install kaggle
 ### Step 1 — Clone & Set Up the Environment
 
 ```bash
-git clone https://github.com/<your-username>/Gopher-AI.git
+git clone https://github.com/Esw4r/Gopher-AI.git
 cd Gopher-AI
 
 # Create and activate a virtual environment
