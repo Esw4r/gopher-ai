@@ -7,10 +7,12 @@
 ## 📋 Table of Contents
 
 1. [Project Overview](#project-overview)
-2. [Detected Classes](#detected-classes)
-3. [Repository Structure](#repository-structure)
-4. [Hardware & Software Requirements](#hardware--software-requirements)
-5. [Step-by-Step: Reproducing the Training](#step-by-step-reproducing-the-training)
+2. [📥 Download Pre-trained Model](#-download-pre-trained-model)
+3. [Detected Classes](#detected-classes)
+4. [Repository Structure](#repository-structure)
+5. [Hardware & Software Requirements](#hardware--software-requirements)
+6. [Quick Start & Inference](#quick-start--inference)
+7. [Step-by-Step: Reproducing the Training](#step-by-step-reproducing-the-training)
    - [Step 1 — Clone & Set Up the Environment](#step-1--clone--set-up-the-environment)
    - [Step 2 — Download the RDD2022 Dataset](#step-2--download-the-rdd2022-dataset)
    - [Step 3 — Filter Non-Dashcam Data](#step-3--filter-non-dashcam-data)
@@ -21,9 +23,8 @@
    - [Step 8 — Train the Model](#step-8--train-the-model)
    - [Step 9 — Resume a Crashed / Paused Run](#step-9--resume-a-crashed--paused-run)
    - [Step 10 — Evaluate Results](#step-10--evaluate-results)
-6. [Training Hyperparameters Explained](#training-hyperparameters-explained)
-7. [Inference](#inference)
-8. [License](#license)
+8. [Training Hyperparameters Explained](#training-hyperparameters-explained)
+9. [License](#license)
 
 ---
 
@@ -32,6 +33,31 @@
 Gopher-AI uses **Ultralytics YOLOv11n** (the nano variant) to detect road damage in real-time from dashcam footage. It is intentionally sized to run on modest hardware (4 GB VRAM), making it practical for edge deployments.
 
 The model was trained on the publicly available **RDD2022** dataset, with a focused preprocessing pipeline to keep only dashcam-perspective imagery (removing drone and motorbike views).
+
+---
+
+## 📥 Download Pre-trained Model
+
+Pre-trained weights are available via the official GitHub Release:
+
+[![GitHub Release](https://img.shields.io/badge/Release-v1.0.0-blue?logo=github)](https://github.com/Esw4r/gopher-ai/releases/tag/v1.0.0)
+[![Model Weights](https://img.shields.io/badge/Weights-gopher--ai__v1.pt%20(21.2MB)-brightgreen)](https://github.com/Esw4r/gopher-ai/releases/download/v1.0.0/gopher-ai_v1.pt)
+
+| Model File | Size | Base Architecture | Release Link |
+|---|---|---|---|
+| **`gopher-ai_v1.pt`** | ~21.2 MB | YOLOv11n (Fine-tuned on RDD2022) | [Download v1.0.0](https://github.com/Esw4r/gopher-ai/releases/download/v1.0.0/gopher-ai_v1.pt) |
+
+### Quick CLI Download:
+```bash
+# Using curl (Linux / macOS / Windows Git Bash):
+curl -L -o gopher-ai_v1.pt https://github.com/Esw4r/gopher-ai/releases/download/v1.0.0/gopher-ai_v1.pt
+
+# Using PowerShell (Windows):
+Invoke-WebRequest -Uri "https://github.com/Esw4r/gopher-ai/releases/download/v1.0.0/gopher-ai_v1.pt" -OutFile "gopher-ai_v1.pt"
+
+# Using wget:
+wget https://github.com/Esw4r/gopher-ai/releases/download/v1.0.0/gopher-ai_v1.pt
+```
 
 ---
 
@@ -310,22 +336,41 @@ Key augmentation settings kept from defaults:
 
 ---
 
-## Inference
+## Quick Start & Inference
 
-To run inference on a single image or video with the trained model:
+You can run inference using the pre-trained **`gopher-ai_v1.pt`** weights (downloaded from the [v1.0.0 Release](https://github.com/Esw4r/gopher-ai/releases/tag/v1.0.0)) or your own trained checkpoint from `runs/detect/train-N/weights/best.pt`.
+
+### CLI Inference
 
 ```bash
-# Image
-yolo detect predict model=runs/detect/train-N/weights/best.pt source=path/to/image.jpg
+# Detect on an image
+yolo detect predict model=gopher-ai_v1.pt source=path/to/image.jpg imgsz=512 conf=0.25
 
-# Webcam / dashcam feed
-yolo detect predict model=runs/detect/train-N/weights/best.pt source=0
+# Real-time webcam / dashcam feed
+yolo detect predict model=gopher-ai_v1.pt source=0 imgsz=512 conf=0.25
 
-# Video file
-yolo detect predict model=runs/detect/train-N/weights/best.pt source=path/to/video.mp4
+# Process a dashcam video
+yolo detect predict model=gopher-ai_v1.pt source=path/to/video.mp4 imgsz=512 conf=0.25
 ```
 
-Predicted frames with bounding boxes are saved to `runs/detect/predict/`.
+Predicted frames with bounding boxes are automatically saved to `runs/detect/predict/`.
+
+### Python API
+
+```python
+from ultralytics import YOLO
+
+# Load the model
+model = YOLO("gopher-ai_v1.pt")
+
+# Predict on an image or video
+results = model.predict(source="path/to/road_image.jpg", conf=0.25, imgsz=512)
+
+# Display or save results
+for r in results:
+    r.show()  # Display annotated image
+    r.save(filename="output.jpg")
+```
 
 ---
 
